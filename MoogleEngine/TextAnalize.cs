@@ -6,36 +6,38 @@ namespace MoogleEngine;
 public class TextAnalize
 {
     static double[]? idf;
-    static List<double[]>? tf_idf;
-
+    static double[,]? tf_idf;
     static Obtein? a;
 
     public TextAnalize()
     {
         a = new Obtein();
-        List<double[]> tf = TF();
+        double[,] tf = TF();
         idf = IDF();
         tf_idf = TF_IDF(tf);
     }
 
-    public static List<double[]> TF()
+    public static double[,] TF()
     {
-        List<Tuple<string, int[]>> vocabulary = a!.vocabulary;
+        Dictionary<string, int[]> vocabulary = a!.vocabulary;
         int[] wordsCount = a!.wordsCount;
 
-        List<double[]> tf = new List<double[]>();
-
-        foreach (Tuple<string, int[]> tupla in vocabulary)
+        //se crea una matriz de array doble tal que las filas representen cada documento y las columas el valor de las palabras unicas en cada documento
+        double[,] tf = new double[wordsCount.Length, vocabulary.Count];
+        int j = 0;
+        //se recorre el vocabulario 
+        foreach (var item in vocabulary)
         {
-            int[] freqVal = tupla.Item2;
-            double[] tfValues = new double[freqVal.Length];
-            for (int i = 0; i < tfValues.Length; i++)
+            //se extrae el value que es un array del tamaño de la cantidad de documentos 
+            int[] freqVal = item.Value;
+            //se recorre cada posición de la columna que representa la palabra única para colocar los valores correspondientes
+            for (int i = 0; i < tf.GetLength(0); i++)
             {
                 int x = wordsCount[i];
                 int freq = freqVal[i];
-                tfValues[i] = (double)freq / x;
+                tf[i, j] = (double)freq / x;
             }
-            tf.Add(tfValues);
+            j++;
         }
 
         return tf;
@@ -43,16 +45,18 @@ public class TextAnalize
 
     public static double[] IDF()
     {
-        List<Tuple<string, int[]>> vocabulary = a!.vocabulary;
+        Dictionary<string, int[]> vocabulary = a!.vocabulary;
         double[] idf = new double[vocabulary.Count];
         int i = 0;
 
-        foreach (Tuple<string, int[]> tupla in vocabulary)
+        foreach (var item in vocabulary)
         {
-            int[] freq = tupla.Item2;
+            //se extrae el value para obtener las frecuencias por documneto, y su tamaño nos da la cantidad de documentos
+            int[] freq = item.Value;
             int x = freq.Length;
             int caunt = 0;
 
+            //se recorre cada valor del array de frecuencias y se lleva la cuenta de en cuantos es distinta de 0 para saber encuantos documentos aparece la palabra
             for (int j = 0; j < freq.Length; j++)
             {
                 if (freq[j] != 0) caunt++;
@@ -65,48 +69,49 @@ public class TextAnalize
         return idf;
     }
 
-    public static List<double[]> TF_IDF(List<double[]> tf)
+    public static double[,] TF_IDF(double[,] tf)
     {
-        List<double[]> tf_idf = new List<double[]>();
-        int j = 0;
-        foreach (var list in tf)
+        //se crea una matriz de array doble tal que las filas representen cada documento y las columas el valor relacionado a las palabras unicas en cada documento
+        double[,] tf_idf = new double[tf.GetLength(0), tf.GetLength(1)];
+        //se recorre cada columna de la matriz de tf y con el mismo indice se obtiene el valor de idf que le corresponde a la palabra de la columna
+        for (int j = 0; j < tf.GetLength(1); j++)
         {
-            double[] tf_idfValues = new double[list.Length];
             double idfValues = idf![j];
 
-            for (int i = 0; i < tf_idfValues.Length; i++)
+            //se recorre cada valor de la columna y se multiplica el valor de tf correspondiente con el idf ya definido
+            for (int i = 0; i < tf_idf.GetLength(0); i++)
             {
-                double tfValues = list[i];
-                if (tfValues != 0) tf_idfValues[i] = tfValues * idfValues;
+                double tfValues = tf[i, j];
+                if (tfValues != 0) tf_idf[i, j] = tfValues * idfValues;
             }
-
-            tf_idf.Add(tf_idfValues);
-            j++;
         }
-
         return tf_idf;
     }
 
     public double[] QueryVec(string query)
     {
-        List<Tuple<string, int[]>> vocabulary = a!.vocabulary;
-
+        Dictionary<string, int[]> vocabulary = a!.vocabulary;
         string[] queryWords = Obtein.NormalizeText(query);
+
+        //el vector del query tiene que tener el mismo tamaño que las filas de las matrices con las que se trabaja 
+        //que en este caso sería un tamaño igual a la cantidad de palabras únicas.
         double[] queryVector = new double[vocabulary.Count];
         int i = 0;
 
-        foreach (Tuple<string, int[]> tupla in vocabulary)
+        foreach (var item in vocabulary)
         {
             double tf = 0;
             int c = 0;
-            string word = tupla.Item1;
+            string word = item.Key;
 
+            //se busca cuantas veces se repite la misma palabra 
             for (int j = 0; j < queryWords.Length; j++)
             {
                 if (queryWords[j] == word) c++;
             }
             tf = (double)c / queryWords.Length;
 
+            //para el valor de idf se emplea un indice que coincide en la posicion de cada palabra
             queryVector[i] = tf * idf![i];
             i++;
         }
@@ -120,20 +125,20 @@ public class TextAnalize
 
         Dictionary<string, double> score = new Dictionary<string, double>();
 
+        //se extraen los valores de cada fila de la matriz de tf*idf que representan los valores de cada documento para calcular su similitud con el query
+        //luego se añaden al diccionario cuya key es el documento y su value la similitu de cosenos
         for (int i = 0; i < documents.Length; i++)
         {
-            double[] docVec = new double[tf_idf!.Count];
+            double[] docVec = new double[tf_idf!.GetLength(1)];
             double temp = 0;
-            int j = 0;
 
-            foreach (double[] item in tf_idf)
+            for (int j = 0; j < tf_idf!.GetLength(1); j++)
             {
-                docVec[j] = item[i];
-                j++;
+                docVec[j] = tf_idf[i, j];
             }
 
             temp = Obtein.CosineSimilarity(queryVector, docVec);
-            score.Add(documents[i], temp);
+            if (temp > 0) score.Add(documents[i], temp);
         }
 
         return score;
@@ -141,7 +146,8 @@ public class TextAnalize
 
     static string Snippet(string title, string query)
     {
-        //normalizar el query para poder utilizarlo en caso de q no aparezca la frase completa que buscamos
+        //normalizar el query para poder utilizarlo en caso de que no aparezca la frase completa que buscamos
+        //al mimo tiempo que se le eliminan las preposiciones, conjunciones y articulos
         string[] querySplit = Obtein.ComunWords(query);
         int lineNumber = Obtein.FindLineNumber(title, query);
         string line;
@@ -166,7 +172,8 @@ public class TextAnalize
             }
         }
 
-        // como no se encontro ninguna de las palabras del query dentro del texto se devuelve la primera linea del .txt
+        //si no se encontra ninguna de las palabras del query dentro del texto se devuelve la primera linea del .txt
+        //esto también ocurre si la única palabra de la busqueda que aparece en el doc es una de las eliminadas por ser extremadamente comunes
         StreamReader reader = new StreamReader(title);
         line = reader.ReadLine()!;
         return line;
@@ -180,6 +187,9 @@ public class TextAnalize
 
         int index = 0;
 
+        //utilizando el diccionario del score se itera a través de cada key que es empleada para escoger la última sección separada por "/" que es el título exacto del documento y para encontrar el snippet correspondiente
+        //esto se va añadiendo al SearchItem que será llamado desde la clase MOogle de donde será ejecutada la respuesta final del programa
+        //solo se realizan los procesos si el valor de score que se encuentra dentro del cada value del diccionario es distinto de 0
         foreach (var item in score)
         {
             string direction = item.Key;
