@@ -158,5 +158,16 @@ public class Obtein
         }
         return reader.ReadLine()!;
     }
+    
+   public static string Oper(string sentence, char startChar)
+    {
+        int startIndex = sentence.IndexOf(startChar);
+        if(startIndex == -1) return null!;
+
+        int endIndex = sentence.IndexOf(' ', startIndex);
+        if(endIndex == -1) endIndex = sentence.Length;
+
+        return sentence.Substring(startIndex, endIndex - startIndex);
+    }
 
 }

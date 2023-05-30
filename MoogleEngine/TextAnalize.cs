@@ -91,6 +91,24 @@ public class TextAnalize
     public double[] QueryVec(string query)
     {
         Dictionary<string, int[]> vocabulary = a!.vocabulary;
+        
+        //solo se recibe una palabra como la que presenta el operador
+        //se busca la palabra que tenga el operador '*' y la cant de veces que se repite el mismo para aumentarle el valor de tf y asi su relevancia en la búsqueda
+        //se elimina con el normalizador los simbolos y se vuelve a convertir en string
+        string temp = Obtein.Oper(query, '*');
+        int count = 0;
+        if (temp != null)
+        {
+            foreach (char y in temp)
+            {
+                if (y == '*') count++;
+                else break;
+            }
+
+            string[] x = Obtein.NormalizeText(temp!);
+            temp = String.Join(" ", x);
+        }
+
         string[] queryWords = Obtein.NormalizeText(query);
 
         //el vector del query tiene que tener el mismo tamaño que las filas de las matrices con las que se trabaja 
@@ -109,8 +127,12 @@ public class TextAnalize
             {
                 if (queryWords[j] == word) c++;
             }
+            if (temp != null)
+            {
+                if (word == temp) c += count * 2;
+            }
             tf = (double)c / queryWords.Length;
-
+            
             //para el valor de idf se emplea un indice que coincide en la posicion de cada palabra
             queryVector[i] = tf * idf![i];
             i++;
@@ -119,7 +141,7 @@ public class TextAnalize
         return queryVector;
     }
 
-    public Dictionary<string, double> Score(double[] queryVector)
+    public Dictionary<string, double> Score(double[] queryVector, string query)
     {
         string[] documents = a!.documents;
 
@@ -139,6 +161,15 @@ public class TextAnalize
 
             temp = Obtein.CosineSimilarity(queryVector, docVec);
             if (temp > 0) score.Add(documents[i], temp);
+        }
+
+        List<string> remove = UnimportantText(query);
+        if (remove != null)
+        {
+            foreach (string key in remove)
+            {
+                if (score.ContainsKey(key)) score.Remove(key);
+            }
         }
 
         return score;
@@ -182,7 +213,7 @@ public class TextAnalize
     public SearchItem[] Query(string query)
     {
         double[] vector = QueryVec(query);
-        Dictionary<string, double> score = Score(vector);
+        Dictionary<string, double> score = Score(vector, query);
         SearchItem[] search = new SearchItem[score.Count];
 
         int index = 0;
@@ -201,5 +232,47 @@ public class TextAnalize
         }
 
         return search;
+    }
+
+    public static List<string> UnimportantText(string query)
+    {
+        Dictionary<string, string[]> words = a!.words;
+        //Dictionary<string, int[]> vocabulary = a.vocabulary;
+
+        List<string> remove = new List<string>();
+
+        string not = Obtein.Oper(query, '^');
+        string dont = Obtein.Oper(query, '!');
+
+        if (not != null || dont != null)
+        {
+            //se busca en cada texto analizado si la palabra con el operador se encuentra
+            //de no ser así se añade a la lista el titulo del libro
+
+            foreach (var item in words)
+            {
+                string[] text = item.Value;
+
+                if (not != null)
+                {
+                    string[] temp = Obtein.NormalizeText(not!);
+                    not = String.Join(" ", temp);
+
+                    int index = Array.IndexOf(text, not);
+                    if (index < 0) remove.Add(item.Key);
+                }
+
+                if (dont != null)
+                {
+                    string[] temp = Obtein.NormalizeText(dont);
+                    dont = String.Join(" ", temp);
+
+                    int index = Array.IndexOf(text, dont);
+                    if (index >= 0 && !remove.Contains(item.Key)) remove.Add(item.Key);
+                }
+            }
+        }
+
+        return remove;
     }
 }
