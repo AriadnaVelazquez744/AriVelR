@@ -1,8 +1,8 @@
 # Fdb version 3
-["pdflatex"] 1689796526 "/home/ariadna/Escuela/Programacion 1ro/moogle/informe.tex" "informe.pdf" "informe" 1689796526
+["pdflatex"] 1689822437 "/home/ariadna/Escuela/Programacion 1ro/moogle/Informe/informe.tex" "informe.pdf" "informe" 1689822437
   "/etc/texmf/web2c/texmf.cnf" 1689543204 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/ariadna/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk" 1689638495 14040 87075f80c19ecd4a23b231bc8d3bd82d ""
-  "/home/ariadna/Escuela/Programacion 1ro/moogle/informe.tex" 1689796525 16236 f8f3d2a411cf34e518be49cba2e5e511 ""
+  "/home/ariadna/Escuela/Programacion 1ro/moogle/Informe/informe.tex" 1689810759 16259 796fe1c0524b5781c6b9b2a093cc68f0 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -33,8 +33,8 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1689543220 128028 f533b797fba58d231669ea19e894e23e ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1689543224 1405649 fa1ab0fdbc9d4d291191cb76062c9f21 ""
-  "informe.aux" 1689796526 32 1b174032087fb90900fa6203d3bb0a7e "pdflatex"
-  "informe.tex" 1689796525 16236 f8f3d2a411cf34e518be49cba2e5e511 ""
+  "informe.aux" 1689822437 32 1b174032087fb90900fa6203d3bb0a7e "pdflatex"
+  "informe.tex" 1689810759 16259 796fe1c0524b5781c6b9b2a093cc68f0 ""
   (generated)
   "informe.aux"
   "informe.log"

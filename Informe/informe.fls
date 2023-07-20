@@ -1,9 +1,9 @@
-PWD /home/ariadna/Escuela/Programacion 1ro/moogle
+PWD /home/ariadna/Escuela/Programacion 1ro/moogle/Informe
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT /home/ariadna/Escuela/Programacion 1ro/moogle/informe.tex
+INPUT /home/ariadna/Escuela/Programacion 1ro/moogle/Informe/informe.tex
 OUTPUT informe.log
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
