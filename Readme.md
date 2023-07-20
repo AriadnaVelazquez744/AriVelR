@@ -1,5 +1,5 @@
 # Moogle!
-Su función es devolver el título del documento con el cual ha habido una coincidencia con el query y un fragmento de este documento en el cual aparezca la frase o palabra buscada. 
+Su función es devolver el título del documento que ha tenido una coincidencia con el query y un fragmento de este documento en el cual aparezca la frase o palabra buscada. 
 
 Para ejecutarlo correctamente, añade documentos .txt en la carpeta Content y no le modifiques el nombre, utiliza el comando make dev y permite que cargue.
 
