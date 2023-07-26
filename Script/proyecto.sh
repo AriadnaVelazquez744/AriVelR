@@ -1,14 +1,14 @@
 #!/bin/bash
 
 if [ $# -eq 0 ]; then
-echo "Este script presenta múltiples opciones, escriba la opción de ejecución deseada de la lista que se facilita a continuacón:
-run: Ejecuta el Moogle
-report: Genera el informe.pdf del Moogle
-slides: Genenra la presentacion.pdf del Moogle
-show_report: Muestra el informe.pdf del Moogle y lo genera si no ha sido hecho con anterioridad
-show_slides: Muestra la presentacion.pdf del Moogle y lo genera si no ha sido hecho con anterioridad
-clean: Elimina los archivos auxiliares generados durante la ejecución de los .tex
-crash: Cierra el script sin necesidad de cerrar la terminal"
+echo "Este script presenta múltiples opciones, escriba la opción de ejecución deseada de la lista que se facilita a continuacón: "
+echo "run: Ejecuta el Moogle."
+echo "report: Genera el informe.pdf del Moogle."
+echo "slides: Genenra la presentacion.pdf del Moogle."
+echo "show_report: Muestra el informe.pdf del Moogle y lo genera si no ha sido hecho con anterioridad."
+echo "show_slides: Muestra la presentacion.pdf del Moogle y lo genera si no ha sido hecho con anterioridad."
+echo "clean: Elimina los archivos auxiliares generados durante la ejecución de los .tex."
+echo "crash: Cierra el script sin necesidad de cerrar la terminal."
 
 read opcion
 trap ctrl_c SIGINT
@@ -181,14 +181,14 @@ do
 
     esac
 
-echo "Este script presenta múltiples opciones, escriba la opción de ejecución deseada de la lista que se facilita a continuacón:
-run: Ejecuta el Moogle
-report: Genera el informe.pdf del Moogle
-slides: Genenra la presentacion.pdf del Moogle
-show_report: Muestra el informe.pdf del Moogle y lo genera si no ha sido hecho con anterioridad
-show_slides: Muestra la presentacion.pdf del Moogle y lo genera si no ha sido hecho con anterioridad
-clean: Elimina los archivos auxiliares generados durante la ejecución de los .tex
-crash: Cierra el script sin necesidad de cerrar la terminal"
+echo "Este script presenta múltiples opciones, escriba la opción de ejecución deseada de la lista que se facilita a continuacón: "
+echo "run: Ejecuta el Moogle."
+echo "report: Genera el informe.pdf del Moogle."
+echo "slides: Genenra la presentacion.pdf del Moogle."
+echo "show_report: Muestra el informe.pdf del Moogle y lo genera si no ha sido hecho con anterioridad."
+echo "show_slides: Muestra la presentacion.pdf del Moogle y lo genera si no ha sido hecho con anterioridad."
+echo "clean: Elimina los archivos auxiliares generados durante la ejecución de los .tex."
+echo "crash: Cierra el script sin necesidad de cerrar la terminal."
 
 read opcion
 
