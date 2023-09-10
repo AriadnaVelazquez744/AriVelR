@@ -36,7 +36,7 @@
 
     \begin{itemize}
         \item El score no aparece al devolver los textos, sin embargo es el encargado del orden de relevancia en el 
-        que se presentan los documentos, que se muestran organizados descendentemente de acuerdo a su score.
+        que se presentan los documentos, que se muestran organizados descendentemente de acuerdo a este valor.
         \item El snippet es un fragmento de texto, del documento relevante, en el que aparece la frase de la búsqueda 
         o un fragmento de esta.
     \end{itemize}    
@@ -46,13 +46,16 @@
     \frametitle{Generalidades}
     \begin{itemize}
         \item Cuenta con los operadores de inclusión (\^{}) y exclusión (!) que determinan si el documento puede ser 
-        devuelto.En el primer caso si la palabra que inicie con el char especificado no está incluida en el documento 
-        este pierde toda su relevancia; en el segundo caso ocurre lo contrario si la palabra aparece en el documento 
-        este se excluye de la lista.
+        devuelto. En el primer caso si la palabra que inicie con el char especificado no está incluida este pierde 
+        toda su relevancia; en el segundo caso ocurre lo contrario, si la palabra aparece este se excluye de la lista.
         \item En el caso del operador de relevancia (*) su función es aumentar la importancia asignada a la palabra 
-        durante la formacion de las matrices del motor de búsqueda, lo que influye en el score de los documentos.
+        durante la formación de las matrices del motor de búsqueda, lo que influye en el score de los documentos.
     \end{itemize}
+
+    Además, contiene un script de bash que permite ejecutar el proyecto, añadir documentos .txt a /Content, generar y 
+    mostrar el informe y la presentación .tex, así como eliminar archivos secundarios innecesarios.
 \end{frame}
+
 
 \begin{frame}
     \frametitle{Especificaciones}
@@ -62,8 +65,7 @@
     La más básica es en la que se encuentran los métodos auxiliares para analizar los textos que es la 
     \textbf{Class Obtein}. El comando \textit{Regex("[\^{}a-zA-Z0-9 ]")}, y las ligeras variaciones que se le hacen, 
     es uno de los más utilizados pues elimina los símbolos y chars que puedan afectar a la búsqueda. También contiene 
-    métodos matemáticos exactos como la similitud de cosenos y búsquedas invariables como encontrar y obtener una 
-    linea del texto.
+    el método matemático exacto de la similitud de cosenos. 
 \end{frame}
 
 \begin{frame} 
@@ -78,14 +80,19 @@
 
 \begin{frame}
     \frametitle{Especificaciones}
-    Además, el proyecto cuenta con dos clases que no se emplean en ningún proceso, pero cuyos principios son 
-    fundamentalespara las operaciones realizadas. Estas son la \textbf{Class Matrix} y  la \textbf{Class Vec},  que 
-    están formadas porlos cálculos que se pueden hacer algebraicamente con matrices y vectores.
+    El proyecto cuenta con dos clases que no se emplean en ningún proceso, pero cuyos principios son 
+    fundamentales para las operaciones realizadas. Estas son la \textbf{Class Matrix} y  la \textbf{Class Vec},  que 
+    están formadas por los cálculos que se pueden hacer algebraicamente con matrices y vectores.
+
+    También presenta un script que se ejecuta con argumentos en la línea de comando y/o con un bucle infinito que muestra 
+    una lista con las opciones válidas y solo se detiene con el comando crash, en lugar del común control c; tiene la 
+    posibilidad de seleccionar el visualizador de pdf deseado y agregar de manera dinámica documentos .txt a /Content para 
+    ejecutarlos en el proyecto.
 \end{frame}
 
 \begin{frame}
     \frametitle{Conclusiones}
-    En el proceso para realizar este proyecto se ha puesto en práctica y comprendido el funcionamiento de una de las 
+    En el proceso para realizar este proyecto he puesto en práctica y comprendido el funcionamiento de una de las 
     operaciones más importante en el desarrollo de programas, que es el trabajo con matrices. 
     
     A lo largo de su evolución se han modificado los tipos de variables y los métodos utilizados, hasta encontrar no 
@@ -93,7 +100,7 @@
 
     Sin embargo, lo realmente importante y la mayor huella que deja el moogle al ser el primer proyecto de programación 
     realizado, es el entendimiento de cuán importante es la persistencia, la distribución del tiempo de trabajo y el 
-    estar siempre dispuestos a buscar nuevas vías de sulución a cualquier desafío computacional que se enfrente.
+    estar siempre dispuestos a buscar nuevas vías de solución a cualquier desafío computacional que se enfrente.
 \end{frame}
 
 \end{document}

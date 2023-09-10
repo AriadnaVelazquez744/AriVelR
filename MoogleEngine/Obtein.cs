@@ -133,31 +133,6 @@ public class Obtein
         return palabrasFinales;
     }
 
-    public static int FindLineNumber(string title, string query)
-    {
-        //se lee linea a linea del texto para encontrar en cual se halla la frase o palabra q buscamos para q nos devuelva el numero de esa linea
-        StreamReader reader = new StreamReader(title);
-        int lineNumber = 0;
-        while (!reader.EndOfStream)
-        {
-            lineNumber++;
-            string line = reader.ReadLine()!;
-            line = line.ToLower();
-            if (line.Contains(query)) return lineNumber;
-        }
-        return -1;
-    }
-
-    public static string GetLine(string title, int lineNumber)
-    {
-        //una vez obtenido el numero de la linea en la que se encuentra la palabra que buscamos con este metodo accedemos a ella apara poder mostrarla
-        StreamReader reader = new StreamReader(title);
-        for (int i = 1; i < lineNumber; i++)
-        {
-            reader.ReadLine();
-        }
-        return reader.ReadLine()!;
-    }
     
    public static string Oper(string sentence, char startChar)
     {

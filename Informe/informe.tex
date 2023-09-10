@@ -14,14 +14,11 @@ Está hecho para que analice textos en español, pues en la búsqueda del snippe
 relevancia como artículos o preposiciones sean buscadas, si esto no es de importancia para el usuario puede 
 emplear textos en ingles, solo que un solo idioma a la vez.
 
-El snippet que se retorna es la primera linea en la que aparece la palabra (o frase, pues esta si aparece 
-completa es prioritaria), sin embargo dentro de la línea devuelta puede ocurrir que si buscas una palabra 
-como “casa” que es la raíz de muchas palabras, la coincidencia del snippet (no para determinar el score), 
-pueda ser una palabra como “casada”. Además cuando la query cuenta con palabras comunes (como artículos, 
-conjunciones o preposiciones) y estas no fueron completamente eliminadas por el idf al no aparecer en todos 
-los documentos, te devuelve el título de aquellos documentos en los que aparece pero el snippet es la primera 
-línea del documento; esto cambia si la búsqueda es únicamente esta palabra (como por ejemplo solo buscar “el” 
-y que no se cancele por su idf) en este caso si devuelve la primera línea en la que aparezca dicho artículo.
+El snippet que se retorna es un fragmento del texto en el que aparece al menos una vez alguna de las palabras 
+del query, dependiendo de la distancia entre una y la otra, contiene la mayor cantidad posible. Además 
+cuando el query cuenta con palabras comunes (como artículos, conjunciones o preposiciones) y estas no fueron 
+completamente eliminadas por el idf al no aparecer en todos los documentos, te devuelve el título de aquellos 
+documentos en los que aparece pero el snippet es un fragmento del inicio del documento.
 
 También cuenta con la implementación de operadores los cuales se presentan como chars delante de la palabra 
 cuya implicación en la búsqueda queremos modificar, se ha de tener en cuenta que cada operador puede ser 
@@ -33,16 +30,20 @@ presentado por una sola de las palabras para que funcione correctamente, estos o
     más relevancia tendrá.
     
     \item \^{} : este operador define que los documentos devueltos tienen que tener la palabra a la que 
-    anteceden, de manera tal que aunque el documento tenga relevancia por presentar otras palabras de la 
+    antecede; de manera tal, que aunque el documento tenga relevancia por presentar otras palabras de la 
     búsqueda, si no tiene esa en específico no debe ser devuelto por el buscador.
 
     \item ! : este operador es el contrario del anterior, pues si la palabra a la que antecede se encuentra 
-    en el texto así sea una sola vez este debe ser descartado completamente.
+    en el texto, así sea una sola vez, este debe ser descartado completamente.
 
 \end{itemize}
 
+Además, presenta un script de bash con el cual es posible ejecutar el proyecto, añadir archivos a la carpeta 
+content mediante lineas de comando, generar y mostrar el informe y la presentación .tex, y eliminar automáticamente
+todos los archivos creados durante la ejecución de las distintas partes de este proyecto.
+
 A continuación se hace un desglose de las clases creadas y los métodos implementados dentro de las misma con 
-una pequeña explicación de su función y proceso:
+una pequeña explicación de su función y proceso, así como del script:
 
 \section*{Class Obtein}
 
@@ -63,7 +64,7 @@ en cada documento.
 
 \subsubsection*{NormalizeText (string[ ] words)}
 A partir de un string (ya sea una sola palabra o un texto completo) pone todas las palabras en minúscula, 
-elimina las tildes y los signos %elimine el fragmento q contenia el comando de regex para eliminar los signos 
+elimina las tildes y los signos %elimine el fragmento q contenía el comando de regex para eliminar los signos 
 ; después crea un array de string en el que las palabras están separadas y sin espacios.
 
 \subsubsection*{CosineSimilarity (double a)}
@@ -72,25 +73,17 @@ Recibe dos array double[ ] que funcionan como vectores para hallar la similitud 
 devuelva un número que sería el score entre un documento y la query introducida.
 
 \subsubsection*{Words (Dictionary$<$string, string[ ]$>$ words)}
-Devuelve un relación entre la dirección de un \textit{.txt} y el texto que contiene ya normalizado y dividido en 
-palabras. Tiene tantas key como documentos se analizan y las palabras de cada string[ ] no coinciden.
+Devuelve un relación entre la dirección de un \textit{.txt} y el texto que contiene ya normalizado y dividido 
+en palabras. Tiene tantas key como documentos se analizan y las palabras de cada string[ ] no coinciden.
 
 \subsubsection*{WordsCount (int[ ] wordsCount)}
 Devuelve un array con las cantidad de palabras que conforman los textos de cada documento.
 
 \subsubsection*{ComunWords (string[ ] palabrasComunes)}
-Contiene los artículos, preposiciones y conjunciones y adverbios para eliminarlas del array introducido, a la vez 
-lo normaliza y divide en palabras sueltas.
+Contiene los artículos, preposiciones y conjunciones y adverbios para eliminarlas del array introducido, a la 
+vez lo normaliza y divide en palabras sueltas.
 Solo se utiliza en el snippet para que en la búsqueda de la sección del texto en la que aparece el query no se 
 traten de buscar palabras sin relevancia.
-
-\subsubsection*{FindLineNumber (int a)}
-Lee el texto de la dirección que se le introduce, lo lleva a minúscula y devuelve el numero de la linea en la 
-que se encuentra el string que recibe, en caso de no hallarse devuelve -1.
-
-\subsubsection*{GetLine (string line)}
-Lee el texto de la dirección introducida y devuelve todo el texto que aparece correspondiente a la linea del 
-número dado.
 
 \subsubsection*{Oper (string x)}
 Devuelve del string introducido una sola palabra (la primera en caso de ser más de una) que inicie con el char 
@@ -108,13 +101,13 @@ que se busca.
 \subsection*{Métodos}
 
 \subsubsection*{TF (double[ , ] tf)}
-Devuelve un array doble con la misma cantidad de columnas que palabras en el vocabulario y número de filas igual 
-a la cantidad de documentos a analizar.
+Devuelve un array doble con la misma cantidad de columnas que palabras en el vocabulario y número de filas 
+igual a la cantidad de documentos a analizar.
 
 Como el diccionario del vocabulario ya contiene al frecuencia en la que aparecen las palabras únicas, lo que 
-hace este método es pasar por cada key y extrae el array de valores de frecuencia para aplicar la formula de tf 
-(frecuencia de la palabra en el documento entre cantidad de palabras del documento), este último valor obtenido 
-del int[ ] wordsCount.
+hace este método es pasar por cada key y extrae el array de valores de frecuencia para aplicar la formula de 
+tf (frecuencia de la palabra en el documento entre cantidad de palabras del documento), este último valor 
+obtenido del int[ ] wordsCount.
 
 \subsubsection*{IDF (double[ ] idf)}
 Devuelve un array de tamaño igual a la cantidad de palabras únicas.
@@ -134,12 +127,12 @@ del idf.
 
 \subsubsection*{QueryVec (double[ ] queryVector)}
 Devuelve un array del tamaño del vocabulario en el que las únicas casillas con valor distinto de cero son las 
-correspondientes a palabras coincidentes con el query, si ninguna coincide el valor del array será todo cero y al 
-calcular el score no se devolverá ningún documento.
+correspondientes a palabras coincidentes con el query, si ninguna coincide el valor del array será todo cero y 
+al calcular el score no se devolverá ningún documento.
 
-Se utiliza el vocabulario para hallar las coincidencias lo que indica en que parte del array se deberá colocar el 
-valor de tf$\times $idf. Se revisa cuantas veces esta la palabra en el query y con esa información se calcula el 
-tf, luego se multiplica con el valor del array de idf previamente establecido, y el resultado se coloca en el 
+Se utiliza el vocabulario para hallar las coincidencias lo que indica en que parte del array se deberá colocar 
+el valor de tf$\times $idf. Se revisa cuantas veces esta la palabra en el query y con esa información se calcula 
+el tf, luego se multiplica con el valor del array de idf previamente establecido, y el resultado se coloca en el 
 lugar ya definido dentro del array queryVector.
 
 Se analiza si alguna de las palabras del query presenta * con el método \textit{Obtein.Oper}; en caso de que el 
@@ -148,13 +141,13 @@ ese resultado se multiplica por 2 y se suma a la cantidad de veces que se repite
 aumentar se tf y su relevancia en la búsqueda.
 
 \subsubsection*{Score (Dictionary$<$string, double$>$ score)}
-Devuelve un diccionario con el tamaño de la cantidad de documentos analizados siempre que su score sea mayor que 
-cero, en el que la key es la ruta del documento y el value el valor de score que le corresponde dependiendo de 
-la query introducida.
+Devuelve un diccionario con el tamaño de la cantidad de documentos analizados siempre que su score sea mayor 
+que cero, en el que la key es la ruta del documento y el value el valor de score que le corresponde dependiendo 
+de la query introducida.
 
 Para calcular el score se crea un nuevo array del tamaño del vocabulario que se llena con cada fila del array 
 doble de tf\_ idf a medida que se cambia de documento, este se utiliza para con el queryVector realizar la 
-similitud de cosenos que s el número que se busca. 
+similitud de cosenos que es el número que se busca. 
 
 Antes de devolver el diccionario se llama al método \textit{UnimportantText} que contiene los documentos que 
 deben ser eliminados de la devolución en caso que se hayan introducido operadores en la búsqueda; si esta lista 
@@ -162,22 +155,28 @@ no es nula se itera a través del diccionario de score y comprobando con las key
 lista remove para quitar las entradas correspondientes.
 
 \subsubsection*{Snippet (string line)}
-Devuelve la primera linea del texto en la que se encuentra una coincidencia con el query, en caso de obtener 
-ninguna devuelve la primera linea del texto.
+Devuelve un fragmento del texto en el que aparece al menos una vez alguna de las palabras del query, dependiendo 
+de la distancia entre una y la otra contiene la mayor cantidad posible.
 
-Para buscar el query primero lo busca como frase completa y si no arroja ningún resultado, busca palabra por 
-palabra, sin contar los artículos, preposiciones y conjunciones que ya fueron eliminados al convertir el query 
-de string a string[ ].
+El primer procedimiento es separar el query por palabras y eliminar los artículos, preposiciones y conjunciones 
+para centrar la búsqueda solamente en palabras relevantes. Para esto se utiliza el método \textit{Optein.ComunWords}
 
-Utiliza los métodos \textit{Optein.FindLineNumber} para saber en que linea se encuentra y \textit{Obtein.GetLine} 
-para que devuelva el texto solicitado en un string.
+A continuación se realiza dos veces el análisis del texto correspondiente con el título recibido como input por 
+la función. Una vez (string[] back) que solamente se separa en palabras y es el que se utiliza en la devolución 
+del fragmento ya que mantiene la ortografía y gramática original. En el otro análisis se normaliza completamente, 
+este es el que se emplea en la búsqueda.
+
+Para buscar el query primero se establece un rango de movimiento para los índices del fragmento, que corresponde 
+con el inicio del texto. Se va revisando el texto palabra por palabra y si la cuenta de repetición de palabras 
+aumenta se modifican los índices. Al finalizar, se amplía el rango en ambas direcciones, cuidando de no salirse 
+del array, para compensar por el cambio de un tipo de texto al otro lo más posible.
 
 \subsubsection*{Query (SerchItem[ ] (title, snippet, score))}
 Utiliza el método \textit{SerchItem[ ]} preestablecido, ahora con tamaño igual a la cantidad de documentos analizados. 
 El title es el nombre del documento, ya separado de las indicaciones de la dirección para encontrarlo, mantiene el 
 tipo de documento que es: en este caso \textit{.txt} . El snippet es obtenido a través del método \textit{Snippet}. 
 Se asocian estos valores con una iteración del Dictionary$<$string, double$>$ score para asociar en cada caso el 
-titulo, la sección en la que aparece el query en el documento y el score que le corresponde.
+título, la sección en la que aparece el query en el documento y el score que le corresponde.
 
 \subsubsection*{UnimportantText (List$<$string$>$ remove)}
 Devuelve una lista con las direcciones de todos los documentos que deben ser descartados en la devolución de la 
@@ -258,57 +257,101 @@ Aquí se presentan algunas búsquedas de prueba realizada para comprobar la func
 \begin{itemize}
     \item 3-harry-potter-y-el-prisionero-de-azkaban.txt
    
-    ... Harry Potter ...
+    ... destello de garras de acero. Malfoy emitió un grito agudísimo y un instante después Hagrid se esforzaba 
+    por volver a ponerle el collar a Buckbeak, que quería alcanzar a un Malfoy que yacía encogido en la hierba y 
+    con sangre en la ropa. —¡Me muero! —gritó Malfoy, mientras cundía el pánico—. ¡Me muero, mirad! ¡Me ha matado! 
+    —No te estás muriendo —le dijo Hagrid, que se había puesto muy pálido—. ...
 
     \item 5-harry-potter-y-la-orden-del-fenix.txt
     
-    ... Harry Potter ...
+    ...  hacía bien decirse a sí mismo que dando la alarma había asegurado que el Sr. Weasley fuera encontrado, 
+    poque estaba también el ineludible tema de serél quien había atacado al Sr. Weaslet en primer lugar. No seas 
+    estúpido, no tienes colmillos, se dijo a sí mismo, tratando de matnener la calma, a pesar de que la mano que  
+    ...
 
     \item 1-harry-potter-y-la-piedra-filosofal.txt
     
-    ... Harry Potter ...
+    ... al mostrador. —Buenos días —dijo Hagrid a un gnomo desocupado—. Hemos venido a sacar algún dinero de la 
+    caja de seguridad del señor Harry Potter. —¿Tiene su llave, señor? —La tengo por aquí —dijo Hagrid, y comenzó 
+    a vaciar sus bolsillos sobre el mostrador, desparramando un puñado de galletas de perro sobre el libro de 
+    cuentas del gnomo. Éste frunció la nariz. Harry observó al gnomo que tenía a ...
 
     \item 2-harry-potter-y-la-camara-secreta.txt
     
-    ... Harry Potter ...
+    ... a Dobby... Dobby estaba al tanto de su grandeza, señor, pero no conocía su bondad... Harry, consciente de 
+    que se estaba ruborizando, dijo: —Sea lo que fuere lo que ha oído sobre mi grandeza, no son más que mentiras. 
+    Ni siquiera soy el primero de la clase en Hogwarts, es Hermione, ella... Pero se detuvo enseguida, porque le 
+    dolía pensar en Hermione. —Harry Potter es humilde y modesto —dijo Dobby, respetuoso. Le resplandecían los ojos 
+    grandes y redondos—. Harry ...
 
     \item 4-harry-potter-y-el-caliz-de-fuego.txt
     
-    ... Harry Potter ...
+    ... —añadió Ginny. Entonces se abrió una puerta en el segundo rellano y asomó por ella una cara con gafas de 
+    montura de hueso y expresión de enfado. —Hola, Percy —saludó Harry. —Ah, hola, Harry —contestó Percy—. Me 
+    preguntaba quién estaría armando tanto jaleo. Intento trabajar, ¿sabéis? Tengo que terminar un informe para la 
+    oficina, y resulta muy difícil concentrarse cuando la gente no para de subir y bajar la escalera haciendo tanto 
+    ruido. —No hacemos tanto ruido —replicó Ron, enfadado—. Estamos subiendo con paso normal. Lamentamos haber 
+    entorpecido los asuntos reservados del Ministerio. ...
 
     \item 6-harry-potter-y-el-principe-mestizo.txt
     
-    ... Harry Potter Y El Príncipe ...
+    ... Harry Potter Y El Príncipe Mestizo -¡El Cuarto de los Menesteres!- dijo Harry, golpeándose en la frente con 
+    el libro de Pociones Avanzadas. Hermione y Ron lo miraron con interés. – ¡Ahí es donde se ha estado escabullendo! 
+    Ahí es donde esta haciendo.... ¡lo que sea que esté haciendo! Y apuesto que por eso es que está desapareciendo 
+    del mapa, pensándolo bien, ¡nunca he visto el Cuarto de los Menesteres en él! -Tal vez los merodeadores nunca 
+    supieron que el cuarto ...
 \end{itemize}
 
 \subsection*{Query: harry !lupin}
 \begin{itemize}
     \item 1-harry-potter-y-la-piedra-filosofal.txt
     
-    ... Harry Potter ...
+    ... al mostrador. —Buenos días —dijo Hagrid a un gnomo desocupado—. Hemos venido a sacar algún dinero de la 
+    caja de seguridad del señor Harry Potter. —¿Tiene su llave, señor? —La tengo por aquí —dijo Hagrid, y comenzó 
+    a vaciar sus bolsillos sobre el mostrador, desparramando un puñado de galletas de perro sobre el libro de 
+    cuentas del gnomo. Éste frunció la nariz. Harry observó al gnomo que tenía a ...
 
     \item 2-harry-potter-y-la-camara-secreta.txt
     
-    ... Harry Potter ...
+    ... a Dobby... Dobby estaba al tanto de su grandeza, señor, pero no conocía su bondad... Harry, consciente de 
+    que se estaba ruborizando, dijo: —Sea lo que fuere lo que ha oído sobre mi grandeza, no son más que mentiras. 
+    Ni siquiera soy el primero de la clase en Hogwarts, es Hermione, ella... Pero se detuvo enseguida, porque le 
+    dolía pensar en Hermione. —Harry Potter es humilde y modesto —dijo Dobby, respetuoso. Le resplandecían los ojos 
+    grandes y redondos—. Harry ...
 \end{itemize}
 
 \subsection*{Query: harry \^{}lupin}
 \begin{itemize}
     \item 3-harry-potter-y-el-prisionero-de-azkaban.txt
     
-    ... Harry Potter ...
+    ... destello de garras de acero. Malfoy emitió un grito agudísimo y un instante después Hagrid se esforzaba 
+    por volver a ponerle el collar a Buckbeak, que quería alcanzar a un Malfoy que yacía encogido en la hierba y 
+    con sangre en la ropa. —¡Me muero! —gritó Malfoy, mientras cundía el pánico—. ¡Me muero, mirad! ¡Me ha matado! 
+    —No te estás muriendo —le dijo Hagrid, que se había puesto muy pálido—. ...
 
     \item 5-harry-potter-y-la-orden-del-fenix.txt
     
-    ... Harry Potter ...
+    ...  hacía bien decirse a sí mismo que dando la alarma había asegurado que el Sr. Weasley fuera encontrado, 
+    poque estaba también el ineludible tema de serél quien había atacado al Sr. Weaslet en primer lugar. No seas 
+    estúpido, no tienes colmillos, se dijo a sí mismo, tratando de matnener la calma, a pesar de que la mano que  
+    ...
 
     \item 4-harry-potter-y-el-caliz-de-fuego.txt
     
-    ... Harry Potter ...
+    ... —añadió Ginny. Entonces se abrió una puerta en el segundo rellano y asomó por ella una cara con gafas de 
+    montura de hueso y expresión de enfado. —Hola, Percy —saludó Harry. —Ah, hola, Harry —contestó Percy—. Me 
+    preguntaba quién estaría armando tanto jaleo. Intento trabajar, ¿sabéis? Tengo que terminar un informe para la 
+    oficina, y resulta muy difícil concentrarse cuando la gente no para de subir y bajar la escalera haciendo tanto 
+    ruido. —No hacemos tanto ruido —replicó Ron, enfadado—. Estamos subiendo con paso normal. Lamentamos haber 
+    entorpecido los asuntos reservados del Ministerio. ...
 
     \item 6-harry-potter-y-el-principe-mestizo.txt
     
-    ... Harry Potter Y El Príncipe
+    ... Harry Potter Y El Príncipe Mestizo -¡El Cuarto de los Menesteres!- dijo Harry, golpeándose en la frente con 
+    el libro de Pociones Avanzadas. Hermione y Ron lo miraron con interés. – ¡Ahí es donde se ha estado escabullendo! 
+    Ahí es donde esta haciendo.... ¡lo que sea que esté haciendo! Y apuesto que por eso es que está desapareciendo 
+    del mapa, pensándolo bien, ¡nunca he visto el Cuarto de los Menesteres en él! -Tal vez los merodeadores nunca 
+    supieron que el cuarto ...
 \end{itemize}
 
 \subsection*{Query: Julio Verne}
@@ -316,37 +359,66 @@ Aquí se presentan algunas búsquedas de prueba realizada para comprobar la func
 \begin{itemize}
     \item Julio Verne - Aventura de tres Rusos y tres Ingleses.txt
     
-    ... Julio Verne ...
+    ... Aventuras de tres rusos tres ingleses en el África y Austral Julio Verne Librodot Aventura de tres rusos 
+    y tres ingleses en África Austral Julio Verne 2 CAPÍTULO PRIMERO Dos hombres observaban con suma atención las 
+    aguas del río Orange. Tendidos a la ...
 
     \item 10. EL REMEDIO ANEXIONISTA.txt
     
-    ... EL REMEDIO ANEXIONISTA. PATRIA, 2 de julio de 1892 ...
+    ... EL REMEDIO ANEXIONISTA. PATRIA, 2 de julio de 1892 Un buen oído oye en la sombra los pasos de los 
+    tejedores silenciosos, y podría ahora un buen oído, en las cosas cubanas, notar como un esforzado aleteo, 
+    y como una empeñosa consulta, del lado de los tejedores. Lo cual es un excelente augurio para los partidarios 
+    de la independencia cubana. Cuando los ...
 
     \item Julio Verne - Ante la bandera.txt 
     
-    ... Del 5 al 25 de Julio.- Han transcurrido dos semanas …
+    ... capas líquidas. Tres mi- nutos después se detiene y noto la impresión de que subimos a la superficie. Nuevo 
+    ruido de la escotilla, que se abre. La puerta de mi camarote está franca, y en algunos pa- sos heme sobre la 
+    plataforma. Miro... El tug acaba de penetrar en el interior mismo de Back-Cup. ¡Allí está el misterioso retiro 
+    donde vive el Conde de Artigas con sus compañeros, fuera de la humanidad, por así decirlo! 159 J U L I O V E R 
+    N E IX DENTRO Al día siguiente, sin que nadie me impidiera ir y venir a mi antojo, he podido ...
 \end{itemize}
-En el último caso la palabra que coincide es únicamente “julio”, pues “Verne” no aparece referenciado en el documento. Como 
-se puede observar a la hora de devolver los documentos se le da mayor importancia (por lo que sale primero) a aquel en el 
-que aparece la frase completa para después buscar la coincidencia de al menos una parte del query
 
-\subsection*{Query: 10}
-\begin{itemize}
-    \item 02. DISCURSOS CONMEMORATIVOS 10 DE OCTUBRE.txt
-    
-    ... DISCURSOS CONMEMORATIVOS AL 10 DE OCTUBRE (FRAGMENTOS). JOSÉ MARTÍ. ...
+\section*{Script}
+Se nombra proyecto.sh y presenta las siguientes opciones:
 
-    \item 01. LECTURA EN STECK HALL.txt
-    
-    ... 10 ...
+\subsection*{add: }
+Permite añadir archivos txt a la carpeta Content para utilizar en el moogle.
 
-    \item Julio Verne - Aventura de tres Rusos y tres Ingleses.txt
-    
-    ... 10 ...
+Lo primero que se solicita al usuario es la ruta de la carpeta desde la que se desea agregar, y se comprueba si 
+es válida.
 
-    \item Julio Verne - Ante la bandera.txt
-    
-    ... 10 ...
-\end{itemize}
+Presenta las opciones de añadir un documento específico o todos los que se encuentran en la carpeta, mientras que 
+estos sean .txt.
+
+\subsection*{run: }
+Ejecuta el proyecto moogle.
+
+\subsection*{report - slides: }
+Tienen el mismo funcionamiento interno. Se desplazan a la carpeta correcta y generan el pdf del informe (report) y de 
+la presentación (slides) respectivamente que se encuentran en formato .tex.
+
+\subsection*{show-report - show-slides: }
+También tienen el mismo funcionamiento interno; muestra los pdf del informe y la presentación respectivamente. 
+Primeramente comprueba si ya fueron generados, al verificar su existencia. Para mostrarlo presenta la opción al 
+usuario de elegir entre introducir un visualizador propio o utilizar el "evince" que es la opción predeterminada; 
+en caso de que el evince no se encuentre dentro del sistema se le solicita al usuario que facilite uno que sepa sí 
+está instalado.
+
+\subsection*{clean: }
+Con esta opción se eliminan todos los archivos posiblemente generados durante la ejecución de cualquier parte del 
+proyecto, los que incluye las carpetas /bin del MoogleServer y el MoogleEngine, así como los archivos generados por 
+los .tex incluyendo el pdf. Por un tema de estética principalmente y para ahorrar procesos innecesarios, antes del 
+comando de borrar se comprueba si existen dichos archivos.
+
+\subsection*{crash: }
+Es el encargado de terminar la ejecución del bash. Como para detener la interfaz del moogle se necesita el comando 
+control c, se implementó un método para que su utilización no cerrara completamente el programa, puesto que interrumpía 
+su correcto funcionamiento.
+
+\subsection*{Otros datos: }
+Se pueden activar sus funciones con los argumentos de la línea de comando (siempre que estos sean los correctos) y mediante un 
+bucle infinito, que se despliega luego de la ejecución de esa primera tarea o desde el inicio si no se especificó nada y 
+muestra un listado con los comandos admisibles, así como una referencia a lo que hace cada uno.
 
 \end{document}

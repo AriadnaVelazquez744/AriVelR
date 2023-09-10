@@ -22,7 +22,7 @@ public class TextAnalize
         Dictionary<string, int[]> vocabulary = a!.vocabulary;
         int[] wordsCount = a!.wordsCount;
 
-        //se crea una matriz de array doble tal que las filas representen cada documento y las columas el valor de las palabras unicas en cada documento
+        //se crea una matriz de array doble tal que las filas representen cada documento y las columnas el valor de las palabras únicas en cada documento
         double[,] tf = new double[wordsCount.Length, vocabulary.Count];
         int j = 0;
         //se recorre el vocabulario 
@@ -51,12 +51,12 @@ public class TextAnalize
 
         foreach (var item in vocabulary)
         {
-            //se extrae el value para obtener las frecuencias por documneto, y su tamaño nos da la cantidad de documentos
+            //se extrae el value para obtener las frecuencias por documento, y su tamaño nos da la cantidad de documentos
             int[] freq = item.Value;
             int x = freq.Length;
             int caunt = 0;
 
-            //se recorre cada valor del array de frecuencias y se lleva la cuenta de en cuantos es distinta de 0 para saber encuantos documentos aparece la palabra
+            //se recorre cada valor del array de frecuencias y se lleva la cuenta de en cuantos es distinta de 0 para saber en cuantos documentos aparece la palabra
             for (int j = 0; j < freq.Length; j++)
             {
                 if (freq[j] != 0) caunt++;
@@ -71,7 +71,7 @@ public class TextAnalize
 
     public static double[,] TF_IDF(double[,] tf)
     {
-        //se crea una matriz de array doble tal que las filas representen cada documento y las columas el valor relacionado a las palabras unicas en cada documento
+        //se crea una matriz de array doble tal que las filas representen cada documento y las columnas el valor relacionado a las palabras únicas en cada documento
         double[,] tf_idf = new double[tf.GetLength(0), tf.GetLength(1)];
         //se recorre cada columna de la matriz de tf y con el mismo indice se obtiene el valor de idf que le corresponde a la palabra de la columna
         for (int j = 0; j < tf.GetLength(1); j++)
@@ -94,7 +94,7 @@ public class TextAnalize
         
         //solo se recibe una palabra como la que presenta el operador
         //se busca la palabra que tenga el operador '*' y la cant de veces que se repite el mismo para aumentarle el valor de tf y asi su relevancia en la búsqueda
-        //se elimina con el normalizador los simbolos y se vuelve a convertir en string
+        //se elimina con el normalizador los símbolos y se vuelve a convertir en string
         string temp = Obtein.Oper(query, '*');
         int count = 0;
         if (temp != null)
@@ -133,7 +133,7 @@ public class TextAnalize
             }
             tf = (double)c / queryWords.Length;
             
-            //para el valor de idf se emplea un indice que coincide en la posicion de cada palabra
+            //para el valor de idf se emplea un indice que coincide en la posición de cada palabra
             queryVector[i] = tf * idf![i];
             i++;
         }
@@ -148,7 +148,7 @@ public class TextAnalize
         Dictionary<string, double> score = new Dictionary<string, double>();
 
         //se extraen los valores de cada fila de la matriz de tf*idf que representan los valores de cada documento para calcular su similitud con el query
-        //luego se añaden al diccionario cuya key es el documento y su value la similitu de cosenos
+        //luego se añaden al diccionario cuya key es el documento y su value la similitud de cosenos
         for (int i = 0; i < documents.Length; i++)
         {
             double[] docVec = new double[tf_idf!.GetLength(1)];
@@ -177,37 +177,60 @@ public class TextAnalize
 
     static string Snippet(string title, string query)
     {
-        //normalizar el query para poder utilizarlo en caso de que no aparezca la frase completa que buscamos
-        //al mimo tiempo que se le eliminan las preposiciones, conjunciones y articulos
-        string[] querySplit = Obtein.ComunWords(query);
-        int lineNumber = Obtein.FindLineNumber(title, query);
-        string line;
+        string[] words = Obtein.ComunWords(query);
 
-        if (lineNumber != -1)
+        StreamReader reader = new StreamReader(title);
+        string content = reader.ReadToEnd();
+        string[] back = content.Split(" ");
+        string[] text = Obtein.NormalizeText(content);
+
+        int x = 50;
+        if (text.Length <= 80) x = text.Length / 2;
+
+        int maxCount = 0;
+        int startIndex = 0;
+        int endIndex = x - 1;
+
+        int count = 0;
+        //cuenta la cantidad de repeticiones de las palabras en la búsqueda
+        string[] fragment = text[0..(x - 1)];
+        for (int i = 0; i < words.Length; i++)
         {
-            // obtener la linea en la que se encuentra la expresion que buscamos para devolverla
-            line = Obtein.GetLine(title, lineNumber);
-            return line;
+            count += fragment.Count(w => w == words[i]);
         }
-        else
+        maxCount = count;
+
+        for (int i = 1, j = x; i < (text.Length - x) || (j < text.Length); i++, j++)
         {
-            //como no se encontro la frase completa se empieza a buscar palabta por palabra dentro del query hasta que alguna coincida para devolver esa linea de texto
-            for (int i = 0; i < querySplit.Length; i++)
+            for (int k = 0; k < words.Length; k++)
             {
-                lineNumber = Obtein.FindLineNumber(title, querySplit[i]);
-                if (lineNumber != -1)
-                {
-                    line = Obtein.GetLine(title, lineNumber);
-                    return line;
-                }
+                if (words[k] == text[i - 1]) count--;
+                if (words[k] == text[j]) count++;
+            }
+
+            if (count > maxCount)
+            {
+                maxCount = count;
+                startIndex = i;
+                endIndex = j;
             }
         }
 
-        //si no se encontra ninguna de las palabras del query dentro del texto se devuelve la primera linea del .txt
-        //esto también ocurre si la única palabra de la busqueda que aparece en el doc es una de las eliminadas por ser extremadamente comunes
-        StreamReader reader = new StreamReader(title);
-        line = reader.ReadLine()!;
-        return line;
+        if ((endIndex != back.Length) && ((endIndex + 30) <= back.Length))
+        {
+            endIndex += 30;
+        }
+        else    endIndex = back.Length;
+
+        if ((startIndex != 0) && ((startIndex - 15) >= 0))
+        {
+            startIndex -= 15;
+        }
+        else    startIndex = 0;
+
+        string snippet = String.Join(" ", back.Skip(startIndex).Take(endIndex - startIndex - 1));
+
+        return snippet;
     }
 
     public SearchItem[] Query(string query)
