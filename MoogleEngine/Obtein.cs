@@ -25,21 +25,21 @@ public class Obtein
         Dictionary<string, int[]> vocabulary = new Dictionary<string, int[]>();
         int i = 0;
 
-        //recorre cada uno de los documentos que estan en el diccionario "words"
+        //recorre cada uno de los documentos que están en el diccionario "words"
         foreach (var file in words)
         {
             //tomar el texto completo normalizado perteneciente a cada documento
             string[] text = file.Value;
 
-            //convertir a lista de palabras unicas asociadas con su frecuencia
+            //convertir a lista de palabras únicas asociadas con su frecuencia
             for (int j = 0; j < text.Length; j++)
             {
                 string word = text[j];
                 bool wordFund = false;
 
-                //se revisa si exixte una key en el vocabulario que coincida con la word y se obtiene su value. 
-                //en caso de encontrarla se añade 1 a su valor de frecuencia en la posicion correspondiente del texto.
-                //si no hay coincidencia, se añade la palabra al diccionario con valor de frec 1 en la posición correspondiente dentro del array.
+                //se revisa si existe una key en el vocabulario que coincida con la word y se obtiene su value. 
+                //en caso de encontrarla se añade 1 a su valor de frecuencia en la posición correspondiente del texto.
+                //si no hay coincidencia, se añade la palabra al diccionario con valor de freq 1 en la posición correspondiente dentro del array.
                 //el valor booleano wordFund es el indicador de si hay q añadir o no la palabra dado que indica su existencia.
                 if (vocabulary.TryGetValue(word, out int[] value))
                 {
@@ -63,7 +63,7 @@ public class Obtein
     {
         //poner todas las palabras en minúscula
         content = content.ToLower();
-        //el patron dentro de regex hace que se elimine todo lo que aparece el el texto con excepcion de las letras minúsculas, las letras mayúsculas y los numeros
+        //el patron dentro de regex hace que se elimine todo lo que aparece el el texto con excepción de las letras minúsculas, las letras mayúsculas y los números
         Regex patron = new Regex("[^a-zA-Z0-9 ]");
         content = patron.Replace(content.Normalize(System.Text.NormalizationForm.FormD), "");
 
@@ -93,7 +93,7 @@ public class Obtein
         Dictionary<string, string[]> words = new Dictionary<string, string[]>();
         string[] text;
 
-        //pasando por caa documento, se eextrae el texto, se normaliza y se coloca en un array para añadirlo al diccionario
+        //pasando por caa documento, se extrae el texto, se normaliza y se coloca en un array para añadirlo al diccionario
         for (int i = 0; i < documents.Length; i++)
         {
             StreamReader reader = new StreamReader(documents[i]);
@@ -107,10 +107,10 @@ public class Obtein
 
     public static int[] WordsCaunt(Dictionary<string, string[]> words)
     {
-        //contiene el tamaño de cada texto una vez normalizado para que sea más rapido acceder a este dato para hacer el idf
+        //contiene el tamaño de cada texto una vez normalizado para que sea más rápido acceder a este dato para hacer el idf
         int[] wordsCount = new int[words.Count];
         int i = 0;
-        //pasa por cada value del diccionario "words" que es el texto normalizado para obtener el tamañode este array
+        //pasa por cada value del diccionario "words" que es el texto normalizado para obtener el tamaño de este array
         foreach (var item in words)
         {
             string[] text = item.Value;

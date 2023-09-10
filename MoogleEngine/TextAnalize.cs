@@ -270,7 +270,7 @@ public class TextAnalize
         if (not != null || dont != null)
         {
             //se busca en cada texto analizado si la palabra con el operador se encuentra
-            //de no ser así se añade a la lista el titulo del libro
+            //de no ser así se añade a la lista el título del libro
 
             foreach (var item in words)
             {
